@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';  // ✅ Import Next.js router
 import supabase from '../lib/supabase';
 
 const Login = () => {
@@ -6,7 +7,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle between login and signup
+  const [isSignUp, setIsSignUp] = useState(false);
+  const router = useRouter();  // ✅ Initialize router
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -24,7 +26,6 @@ const Login = () => {
         if (signUpError) {
           setError(signUpError.message);
         } else {
-          // Insert user email and password into the 'users' table
           const { data, error: insertError } = await supabase
             .from('users')
             .insert([{ email, hashed_password: password }]);
@@ -46,6 +47,9 @@ const Login = () => {
           setError(loginError.message);
         } else {
           setMessage('Login successful!');
+          setTimeout(() => {
+            router.push('/recipes');  // ✅ Redirect to /recipes after login
+          }, 1000);
         }
       }
     } catch (error) {
